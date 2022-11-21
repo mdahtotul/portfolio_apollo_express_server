@@ -18,9 +18,9 @@ const projectResolvers = {
         _id: { $in: parent.categoriesId },
       });
     },
-    // tags: async (parent, args, { models }) => {
-    //   return await models.DB_Tag.find({ _id: { $in: parent.tagsId } });
-    // },
+    tags: async (parent, args, { models }) => {
+      return await models.DB_Tag.find({ _id: { $in: parent.tagsId } });
+    },
     // client: async (parent, args, { models }) => {
     //   return await models.DB_People.findById(parent.clientId);
     // },
