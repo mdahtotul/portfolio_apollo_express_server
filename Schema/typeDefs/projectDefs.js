@@ -9,12 +9,12 @@ const projectType = gql`
     categories: [Category]
     des: [String]
     tagsId: [ID!]
-    #tags: [Tag]
+    tags: [Tag]
     rank: Float
     ratings: Float
     status: ProjectStatus
     clientId: ID
-    #client: User
+    client: User
     live_site: String
     client_repo: String
     server_repo: String

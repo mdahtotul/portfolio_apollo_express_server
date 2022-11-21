@@ -18,7 +18,7 @@ const categoryType = gql`
 
   extend type Query {
     listCategory: [Category!]
-    getCategory(id: ID!): Category!
+    getCategory(id: ID!): Category
   }
 
   extend type Mutation {

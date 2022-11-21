@@ -1,5 +1,5 @@
 // external imports
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
 // schema
@@ -20,15 +20,20 @@ const peopleSchema = Schema(
       type: String,
       required: true,
     },
+    dialCode: {
+      type: String,
+      trim: true,
+    },
     phone: {
       type: String,
+      trim: true,
     },
     avatar: {
       type: String,
     },
     role: {
       type: String,
-      enum: ['Admin', 'User', 'Editor', 'Moderator'],
+      enum: ["Admin", "User", "Editor", "Moderator"],
     },
     cloudinary_id: {
       type: String,
@@ -36,7 +41,7 @@ const peopleSchema = Schema(
     projects: [
       {
         type: mongoose.Types.ObjectId,
-        ref: 'Project',
+        ref: "Project",
       },
     ],
   },
@@ -46,6 +51,6 @@ const peopleSchema = Schema(
 );
 
 // model
-const People = model('People', peopleSchema);
+const People = model("People", peopleSchema);
 
 module.exports = People;
