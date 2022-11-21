@@ -11,7 +11,7 @@ const reviewSchema = new Schema({
   },
   reviewer: {
     id: mongoose.Types.ObjectId,
-    ref: "People",
+    // ref: "People",
   },
 });
 

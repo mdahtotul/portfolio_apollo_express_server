@@ -5,16 +5,61 @@ const projectType = gql`
     id: ID!
     name: String!
     slug: String!
+    categoriesId: [ID!]!
+    categories: [Category]
+    des: [String]
+    tagsId: [ID!]
+    #tags: [Tag]
+    rank: Float
+    ratings: Float
+    status: ProjectStatus
+    clientId: ID
+    #client: User
+    live_site: String
+    client_repo: String
+    server_repo: String
+    thumb_img: String
+    sub_img: [String]
   }
 
   input CreateProjectInput {
     name: String!
     slug: String!
+    categoriesId: [ID!]
+    des: String
+    tagsId: [ID!]
+    rank: Float!
+    ratings: Float
+    status: ProjectStatus = Not_Started
+    clientId: ID
+    live_site: String
+    client_repo: String
+    server_repo: String
+    thumb_img: String
+    sub_img: [String]
   }
 
   input UpdateProjectInput {
-    name: String!
-    slug: String!
+    name: String
+    slug: String
+    categoriesId: [ID!]
+    des: String
+    tagsId: [ID!]
+    rank: Float
+    ratings: Float
+    status: ProjectStatus
+    clientId: ID
+    live_site: String
+    client_repo: String
+    server_repo: String
+    thumb_img: String
+    sub_img: [String]
+  }
+
+  enum ProjectStatus {
+    Not_Started
+    In_Progress
+    Completed
   }
 
   extend type Query {

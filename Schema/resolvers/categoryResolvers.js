@@ -13,6 +13,12 @@ const categoryResolvers = {
     },
   },
 
+  Category: {
+    projects: async (parent, args, { models }) => {
+      return await models.DB_Project.find({ _id: { $in: parent.projectsId } });
+    },
+  },
+
   Mutation: {
     createCategory: async (parent, args, { models }) => {
       const newCategory = new models.DB_Category({
