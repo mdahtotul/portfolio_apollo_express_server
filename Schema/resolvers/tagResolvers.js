@@ -22,7 +22,6 @@ const tagResolvers = {
       });
       return await newTag.save();
     },
-
     updateTag: async (parent, args, { models }) => {
       const updateTag = new models.DB_Tag({
         _id: args.id,
