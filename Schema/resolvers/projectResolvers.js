@@ -21,9 +21,9 @@ const projectResolvers = {
     tags: async (parent, args, { models }) => {
       return await models.DB_Tag.find({ _id: { $in: parent.tagsId } });
     },
-    // client: async (parent, args, { models }) => {
-    //   return await models.DB_People.findById(parent.clientId);
-    // },
+    client: async (parent, args, { models }) => {
+      return await models.DB_People.findById(parent.clientId);
+    },
   },
 
   Mutation: {

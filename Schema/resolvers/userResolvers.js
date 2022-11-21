@@ -16,7 +16,7 @@ const userResolvers = {
         password: args.input.password,
         avatar: args.input.avatar || "",
         role: args.input.role,
-        dialCode: args.input.dialCode,
+        dialCode: args.input.dialCode || "",
         phone: args.input.phone || "",
       });
       return await newUser.save();

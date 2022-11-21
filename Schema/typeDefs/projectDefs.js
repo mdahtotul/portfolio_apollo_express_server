@@ -14,7 +14,7 @@ const projectType = gql`
     ratings: Float
     status: ProjectStatus
     clientId: ID
-    #client: User
+    client: User
     live_site: String
     client_repo: String
     server_repo: String

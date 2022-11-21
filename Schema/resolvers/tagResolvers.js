@@ -27,7 +27,7 @@ const tagResolvers = {
         _id: args.id,
         name: args.input.name,
       });
-      return await Tag.findOneAndUpdate({ _id: args.id }, updateTag, {
+      return await models.DB_Tag.findOneAndUpdate({ _id: args.id }, updateTag, {
         new: true,
       });
     },
