@@ -18,6 +18,7 @@ async function runApolloServer() {
     typeDefs,
     resolvers: mergedResolvers,
     context: { models },
+    introspection: true,
   });
   await server.start();
   server.applyMiddleware({ app });
