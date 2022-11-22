@@ -1,3 +1,4 @@
+// external modules
 const express = require("express");
 require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
