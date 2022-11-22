@@ -39,12 +39,18 @@ const time =
   today.getSeconds() +
   "sec";
 
-// stroing current server url
+// storing current server url
 const server_string =
   process.env.NODE_ENV === "development"
     ? `http://localhost:${port}/`
     : process.env.prod_server;
 
+app.get("/", (req, res) =>
+  res.status(200).send(
+    `Welcome to MD ARIFUL HASAN portfolio server😍.
+      Thanks for visiting this server🤝`
+  )
+);
 // watching server on console with some styles
 app.listen({ port: port }, () =>
   console.log(
