@@ -1,15 +1,17 @@
+const models = require("../../models");
+
 const userResolvers = {
   Query: {
-    listUser: async (parent, args, { models }) => {
+    listUser: async (parent, args, context) => {
       return await models.DB_People.find({});
     },
-    getUser: async (parent, args, { models }) => {
+    getUser: async (parent, args, context) => {
       return await models.DB_People.findById(args.id);
     },
   },
 
   Mutation: {
-    createUser: async (parent, args, { models }) => {
+    createUser: async (parent, args, context) => {
       const newUser = new models.DB_People({
         name: args.input.name,
         email: args.input.email,
@@ -21,7 +23,7 @@ const userResolvers = {
       });
       return await newUser.save();
     },
-    updateUser: async (parent, args, { models }) => {
+    updateUser: async (parent, args, context) => {
       const updatedUserInfo = new models.DB_People({
         _id: args.id,
         name: args.input.name,
@@ -39,7 +41,7 @@ const userResolvers = {
         }
       );
     },
-    updateUserRole: async (parent, args, { models }) => {
+    updateUserRole: async (parent, args, context) => {
       const updatedUserRole = new models.DB_People({
         _id: args.id,
         role: args.input.role,
@@ -53,7 +55,7 @@ const userResolvers = {
         }
       );
     },
-    deleteUser: async (parent, args, { models }) => {
+    deleteUser: async (parent, args, context) => {
       return await models.DB_People.findByIdAndDelete(args.id);
     },
   },
