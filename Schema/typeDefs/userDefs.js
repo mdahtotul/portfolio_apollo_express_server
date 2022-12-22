@@ -56,7 +56,7 @@ const userType = gql`
     updateUser(id: ID!, input: UpdateUserInput!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
-    login(email: String!, password: String!): AuthPayload
+    loginUser(email: String!, password: String!): AuthPayload
   }
 `;
 

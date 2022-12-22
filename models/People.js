@@ -13,9 +13,9 @@ const peopleSchema = Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -29,9 +29,10 @@ const peopleSchema = Schema(
       type: String,
       trim: true,
       // bellow 3 lines will make sure that field is unique and indexed and will have no problem when multiple users are trying to register using null phone number
-      index: true,
-      unique: true,
-      sparse: true,
+      index: {
+        unique: true,
+        partialFilterExpression: { phone: { $type: "string" } },
+      },
     },
     avatar: {
       type: String,
