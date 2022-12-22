@@ -20,7 +20,9 @@ const userType = gql`
   }
 
   type AuthPayload {
-    user: User
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
   }
 
   input CreateUserInput {
@@ -48,7 +50,7 @@ const userType = gql`
   extend type Query {
     listUser: [User!]
     getUser(id: ID!): User
-    getLogin(email: String!, password: String!): AuthPayload
+    loginUser(email: String!, password: String!): AuthPayload!
   }
 
   extend type Mutation {
@@ -56,7 +58,6 @@ const userType = gql`
     updateUser(id: ID!, input: UpdateUserInput!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
-    loginUser(email: String!, password: String!): AuthPayload
   }
 `;
 

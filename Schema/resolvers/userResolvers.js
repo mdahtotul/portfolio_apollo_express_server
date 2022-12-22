@@ -2,6 +2,8 @@ const { GraphQLError } = require("graphql");
 const models = require("../../models");
 const bcrypt = require("bcrypt");
 const { UserInputError } = require("apollo-server-express");
+const { validateEmail } = require("../../utils/general");
+const jwt = require("jsonwebtoken");
 
 const userResolvers = {
   Query: {
@@ -11,12 +13,37 @@ const userResolvers = {
     getUser: async (parent, args, context) => {
       return await models.DB_People.findById(args.id);
     },
+    loginUser: async (parent, args, context) => {
+      const { email, password } = args;
+      if (!email || !password) {
+        throw new UserInputError("❌ Email or Password is missing!");
+      }
+
+      const matchedUser = await models.DB_People.findOne({ email: email });
+      if (!matchedUser) {
+        throw new Error("❌ User not found!");
+      }
+      const isMatched = await bcrypt.compare(password, matchedUser.password);
+      if (!isMatched) {
+        throw new Error("❌ Password is incorrect!");
+      }
+
+      const token = jwt.sign(
+        { userId: matchedUser._id, email: matchedUser.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "48h" }
+      );
+      return { userId: matchedUser._id, token: token, tokenExpiration: 48 };
+    },
   },
 
   Mutation: {
     createUser: async (parent, args, context) => {
       try {
         const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+        if (!validateEmail(args.input.email)) {
+          throw new UserInputError("❌ Invalid Email!");
+        }
         const hashedPassword = await bcrypt.hash(args.input.password, salt);
         if (!hashedPassword) throw new Error("❌ Failed to hash password");
 
@@ -29,7 +56,13 @@ const userResolvers = {
           dialCode: args.input.dialCode || "",
           phone: args.input.phone || null,
         });
-        return await newUser.save();
+        const result = await newUser.save();
+
+        return {
+          ...result._doc,
+          id: result._id,
+          password: "secured_password",
+        };
       } catch (err) {
         console.log("❌ Failed to register user: \n", err);
         console.log(err.keyValue);
@@ -80,7 +113,6 @@ const userResolvers = {
     deleteUser: async (parent, args, context) => {
       return await models.DB_People.findByIdAndDelete(args.id);
     },
-    loginUser: async (parent, args, context) => {},
   },
 };
 
