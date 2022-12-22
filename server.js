@@ -5,25 +5,19 @@ const { ApolloServer } = require("apollo-server-express");
 const typeDefs = require("./Schema/typeDefs");
 const connectDB = require("./config/mongooseDB");
 const colors = require("colors");
-const models = require("./models");
 const mergedResolvers = require("./Schema/resolvers");
 const session = require("express-session");
 const uuid = require("uuid");
 const passport = require("passport");
-const { GraphQLLocalStrategy, buildContext } = require("graphql-passport");
-const userResolvers = require("./Schema/resolvers/userResolvers");
+const initPassport = require("./config/initPassport");
+
+const clientUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.CLIENT_URL
+    : "http://localhost:3000";
 
 // passport initialization
-passport.use(
-  new GraphQLLocalStrategy((email, password, done) => {
-    const users = userResolvers.Query.listUser();
-    const matchingUser = users.find(
-      (user) => user.email === email && user.password === password
-    );
-    const error = matchingUser ? null : new Error("No user found!😐");
-    done(error, matchingUser);
-  })
-);
+initPassport();
 
 // initialization
 const app = express();
@@ -32,6 +26,9 @@ const port = process.env.PORT || 4000;
 // database connection
 connectDB();
 
+// middleware
+app.use(express.json());
+// passport connection
 app.use(
   session({
     genid: (req) => {
@@ -52,9 +49,7 @@ async function runApolloServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers: mergedResolvers,
-    context: ({ req, res }) => {
-      buildContext({ req, res });
-    },
+    context: ({ req, res }) => ({ req, res }),
     // context: { models },
     introspection: true,
   });
@@ -77,7 +72,7 @@ const time =
 // storing current server url
 const server_string =
   process.env.NODE_ENV === "development"
-    ? `http://localhost:${port}/`
+    ? `http://localhost:${port}`
     : process.env.prod_server;
 
 app.get("/", (req, res) =>

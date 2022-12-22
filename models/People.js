@@ -28,6 +28,10 @@ const peopleSchema = Schema(
     phone: {
       type: String,
       trim: true,
+      // bellow 3 lines will make sure that field is unique and indexed and will have no problem when multiple users are trying to register using null phone number
+      index: true,
+      unique: true,
+      sparse: true,
     },
     avatar: {
       type: String,

@@ -19,6 +19,10 @@ const userType = gql`
     Moderator
   }
 
+  type AuthPayload {
+    user: User
+  }
+
   input CreateUserInput {
     name: String!
     email: String!
@@ -44,6 +48,7 @@ const userType = gql`
   extend type Query {
     listUser: [User!]
     getUser(id: ID!): User
+    getLogin(email: String!, password: String!): AuthPayload
   }
 
   extend type Mutation {
@@ -51,6 +56,7 @@ const userType = gql`
     updateUser(id: ID!, input: UpdateUserInput!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
+    login(email: String!, password: String!): AuthPayload
   }
 `;
 
