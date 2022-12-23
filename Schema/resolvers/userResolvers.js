@@ -1,9 +1,13 @@
 const { GraphQLError } = require("graphql");
 const models = require("../../models");
 const bcrypt = require("bcrypt");
-const { UserInputError } = require("apollo-server-express");
-const { validateEmail } = require("../../utils/general");
+const {
+  UserInputError,
+  AuthenticationError,
+} = require("apollo-server-express");
+const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
+const { sendOtpEmail } = require("../../utils/nodemailer");
 
 const userResolvers = {
   Query: {
@@ -29,15 +33,57 @@ const userResolvers = {
       }
 
       const token = jwt.sign(
-        { userId: matchedUser._id, email: matchedUser.email },
+        {
+          userId: matchedUser._id,
+          userEmail: matchedUser.email,
+          userRole: matchedUser.role,
+        },
         process.env.JWT_SECRET,
         { expiresIn: "48h" }
       );
-      return { userId: matchedUser._id, token: token, tokenExpiration: 48 };
+      return {
+        userId: matchedUser._id,
+        userRole: matchedUser.role,
+        token: token,
+        tokenExpiration: 48,
+      };
     },
   },
 
   Mutation: {
+    getOtp: async (parent, { email }, context) => {
+      if (!email) {
+        throw new UserInputError("❌ Email is missing!");
+      }
+      if (!validateEmail(email)) {
+        throw new UserInputError("❌ Invalid Email!");
+      }
+
+      const matchedUser = await models.DB_OTP.findOne({ userEmail: email });
+
+      if (matchedUser) {
+        throw new UserInputError(
+          `❌ otp already sent to ${email}. Please try again after 5 minutes.`
+        );
+      }
+      const genOtp = otpGeneratorFunc();
+
+      try {
+        const newOtp = new models.DB_OTP({
+          otp: genOtp,
+          userEmail: email,
+          medium: "email",
+        });
+
+        await newOtp.save();
+
+        await sendOtpEmail(email, genOtp);
+        return `✅ OTP sent to ${email}`;
+      } catch (err) {
+        console.log("❌ Failed to send otp: \n", err);
+        throw new GraphQLError(`❌ Failed to register user: \n ${err.message}`);
+      }
+    },
     createUser: async (parent, args, context) => {
       try {
         const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
@@ -79,6 +125,9 @@ const userResolvers = {
       }
     },
     updateUser: async (parent, args, context) => {
+      if (!context.req.isAuth) {
+        throw new AuthenticationError("❌ Unauthenticated!");
+      }
       const updatedUserInfo = new models.DB_People({
         _id: args.id,
         name: args.input.name,
@@ -97,6 +146,9 @@ const userResolvers = {
       );
     },
     updateUserRole: async (parent, args, context) => {
+      if (!context.req.isAuth) {
+        throw new AuthenticationError("❌ Unauthenticated!");
+      }
       const updatedUserRole = new models.DB_People({
         _id: args.id,
         role: args.input.role,
@@ -111,6 +163,13 @@ const userResolvers = {
       );
     },
     deleteUser: async (parent, args, context) => {
+      console.log("is Auth", context.req.isAuth);
+      console.log("userID", context.req.userId);
+      console.log("userRole", context.req.userRole);
+      if (!context.req.isAuth) {
+        throw new AuthenticationError("❌ Unauthenticated!");
+      }
+
       return await models.DB_People.findByIdAndDelete(args.id);
     },
   },

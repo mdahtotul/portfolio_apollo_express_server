@@ -2,9 +2,9 @@ const otpGenerator = require("otp-generator");
 
 const otpGeneratorFunc = () => {
   const otp = otpGenerator.generate(6, {
-    upperCase: false, // no capital letters
+    upperCaseAlphabets: false, // no capital letters
     specialChars: false, // no special characters lik #*!&
-    alphabets: false, // no alphabets
+    lowerCaseAlphabets: false, // no alphabets
   });
   return otp; // only 6 digit numbers
 };

@@ -10,6 +10,7 @@ const session = require("express-session");
 const uuid = require("uuid");
 const passport = require("passport");
 const initPassport = require("./config/initPassport");
+const isAuthenticate = require("./middleware/isAuthenticate");
 
 const clientUrl =
   process.env.NODE_ENV === "production"
@@ -28,6 +29,7 @@ connectDB();
 
 // middleware
 app.use(express.json());
+app.use(isAuthenticate);
 // passport connection
 app.use(
   session({
@@ -50,7 +52,6 @@ async function runApolloServer() {
     typeDefs,
     resolvers: mergedResolvers,
     context: ({ req, res }) => ({ req, res }),
-    // context: { models },
     introspection: true,
   });
   await server.start();

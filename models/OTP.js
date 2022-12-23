@@ -9,10 +9,9 @@ const otpSchema = Schema(
       type: String,
       required: true,
     },
-    user: {
-      type: mongoose.Types.ObjectId,
+    userEmail: {
+      type: String,
       required: true,
-      unique: true,
       ref: "People",
     },
     medium: {

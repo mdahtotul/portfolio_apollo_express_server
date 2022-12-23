@@ -12,17 +12,25 @@ const userType = gql`
     phone: String
   }
 
+  type AuthPayload {
+    userId: ID!
+    userRole: UserRole
+    token: String!
+    tokenExpiration: Int!
+  }
+
+  type OTP {
+    otp: String!
+    userEmail: String!
+    medium: String
+    expireAt: String
+  }
+
   enum UserRole {
     Admin
     User
     Editor
     Moderator
-  }
-
-  type AuthPayload {
-    userId: ID!
-    token: String!
-    tokenExpiration: Int!
   }
 
   input CreateUserInput {
@@ -54,6 +62,7 @@ const userType = gql`
   }
 
   extend type Mutation {
+    getOtp(email: String!): String!
     createUser(input: CreateUserInput!): User
     updateUser(id: ID!, input: UpdateUserInput!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
