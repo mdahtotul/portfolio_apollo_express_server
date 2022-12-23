@@ -45,7 +45,6 @@ const userType = gql`
 
   input UpdateUserInput {
     name: String
-    password: String
     avatar: String
     dialCode: String
     phone: String
@@ -65,6 +64,7 @@ const userType = gql`
     getOtp(email: String!): String!
     createUser(input: CreateUserInput!): User
     updateUser(id: ID!, input: UpdateUserInput!): User
+    UpdateUserPassword(id: ID!, password: String!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
   }

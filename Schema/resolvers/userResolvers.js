@@ -131,7 +131,6 @@ const userResolvers = {
       const updatedUserInfo = new models.DB_People({
         _id: args.id,
         name: args.input.name,
-        password: args.input.password,
         avatar: args.input.avatar,
         dialCode: args.input.dialCode,
         phone: args.input.phone,
