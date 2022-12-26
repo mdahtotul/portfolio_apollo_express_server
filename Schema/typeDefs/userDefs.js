@@ -28,7 +28,7 @@ const userType = gql`
 
   enum UserRole {
     Admin
-    User
+    Visitor
     Editor
     Moderator
   }
@@ -38,7 +38,7 @@ const userType = gql`
     email: String!
     password: String!
     avatar: String
-    role: UserRole = USER
+    role: UserRole = Visitor
     dialCode: String
     phone: String
   }

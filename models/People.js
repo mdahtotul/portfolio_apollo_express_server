@@ -39,7 +39,8 @@ const peopleSchema = Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "User", "Editor", "Moderator"],
+      enum: ["Admin", "Visitor", "Editor", "Moderator"],
+      default: "Visitor",
     },
     cloudinary_id: {
       type: String,

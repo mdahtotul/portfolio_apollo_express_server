@@ -53,17 +53,17 @@ const userResolvers = {
   Mutation: {
     getOtp: async (parent, { email }, context) => {
       if (!email) {
-        throw new UserInputError("❌ Email is missing!");
+        throw new UserInputError("Email is missing!");
       }
       if (!validateEmail(email)) {
-        throw new UserInputError("❌ Invalid Email!");
+        throw new UserInputError("Invalid Email!");
       }
 
       const matchedUser = await models.DB_OTP.findOne({ userEmail: email });
 
       if (matchedUser) {
         throw new UserInputError(
-          `❌ otp already sent to ${email}. Please try again after 5 minutes.`
+          `OTP already sent to ${email}. Please try again after 5 minutes.`
         );
       }
       const genOtp = otpGeneratorFunc();
@@ -78,10 +78,10 @@ const userResolvers = {
         await newOtp.save();
 
         await sendOtpEmail(email, genOtp);
-        return `✅ OTP sent to ${email}`;
+        return `OTP sent to ${email}`;
       } catch (err) {
-        console.log("❌ Failed to send otp: \n", err);
-        throw new GraphQLError(`❌ Failed to register user: \n ${err.message}`);
+        console.log("❌Failed to send otp: \n", err);
+        throw new GraphQLError(` Failed to register user: \n ${err.message}`);
       }
     },
     createUser: async (parent, args, context) => {
@@ -114,19 +114,15 @@ const userResolvers = {
         console.log(err.keyValue);
         if (err.code === 11000) {
           let errField = Object.keys(err.keyValue)[0];
-          throw new UserInputError(
-            `❌ ${errField} already exists in Database!`
-          );
+          throw new UserInputError(`${errField} already exists in Database!`);
         } else {
-          throw new GraphQLError(
-            `❌ Failed to register user: \n ${err.message}`
-          );
+          throw new GraphQLError(`Failed to register user: \n ${err.message}`);
         }
       }
     },
     updateUser: async (parent, args, context) => {
       if (!context.req.isAuth) {
-        throw new AuthenticationError("❌ Unauthenticated!");
+        throw new AuthenticationError("Unauthenticated!");
       }
       const updatedUserInfo = new models.DB_People({
         _id: args.id,
@@ -146,7 +142,7 @@ const userResolvers = {
     },
     updateUserRole: async (parent, args, context) => {
       if (!context.req.isAuth) {
-        throw new AuthenticationError("❌ Unauthenticated!");
+        throw new AuthenticationError("Unauthenticated!");
       }
       const updatedUserRole = new models.DB_People({
         _id: args.id,
@@ -166,7 +162,7 @@ const userResolvers = {
       console.log("userID", context.req.userId);
       console.log("userRole", context.req.userRole);
       if (!context.req.isAuth) {
-        throw new AuthenticationError("❌ Unauthenticated!");
+        throw new AuthenticationError("Unauthenticated!");
       }
 
       return await models.DB_People.findByIdAndDelete(args.id);
