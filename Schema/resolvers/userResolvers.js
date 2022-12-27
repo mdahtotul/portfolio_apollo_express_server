@@ -26,7 +26,7 @@ const userResolvers = {
         otp: otp,
         userEmail: email,
       });
-      console.log(matchedOtp);
+
       if (!matchedOtp) {
         return false;
       } else {
@@ -71,20 +71,22 @@ const userResolvers = {
       if (!email) {
         throw new UserInputError("Email is missing!");
       }
+      // regex email validation
       if (!validateEmail(email)) {
         throw new UserInputError("Invalid Email!");
       }
-
-      const matchedUser = await models.DB_OTP.findOne({ userEmail: email });
-
-      if (matchedUser) {
-        throw new UserInputError(
-          `OTP already sent to ${email}. Please try again after 5 minutes.`
-        );
-      }
-      const genOtp = otpGeneratorFunc();
-
       try {
+        // check if email already exists
+        const matchedUser = await models.DB_OTP.findOne({ userEmail: email });
+
+        if (matchedUser) {
+          throw new UserInputError(
+            `OTP already sent to ${email}. Please try again after 5 minutes.`
+          );
+        }
+        // generating OTP
+        const genOtp = otpGeneratorFunc();
+
         const newOtp = new models.DB_OTP({
           otp: genOtp,
           userEmail: email,
@@ -96,23 +98,26 @@ const userResolvers = {
         await sendOtpEmail(email, genOtp);
         return `OTP sent to ${email}`;
       } catch (err) {
-        console.log("❌Failed to send otp: \n", err);
-        throw new GraphQLError(` Failed to register user: \n ${err.message}`);
+        console.log("Failed to send otp: \n", err);
+        throw new GraphQLError(`${err.message}`);
       }
     },
     createUser: async (parent, args, context) => {
       try {
         const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+        // regex email validation
         if (!validateEmail(args.input.email)) {
-          throw new UserInputError("❌ Invalid Email!");
+          throw new UserInputError("Invalid Email!");
         }
+        // check if email already exists
         const matchedUser = await models.DB_People.findOne({
           email: args.input.email,
         });
-        if (matchedUser) return new UserInputError("❌ Email already exists!");
+        if (matchedUser) return new UserInputError("Email already exists!");
+        // hashing password
         const hashedPassword = await bcrypt.hash(args.input.password, salt);
-        if (!hashedPassword) throw new Error("❌ Failed to hash password");
-
+        if (!hashedPassword) throw new Error("Failed to hash password");
+        // creating new user
         const newUser = new models.DB_People({
           name: args.input.name,
           email: args.input.email,
@@ -122,6 +127,7 @@ const userResolvers = {
           dialCode: args.input.dialCode || "",
           phone: args.input.phone || null,
         });
+        // saving new user to database
         const result = await newUser.save();
 
         return {
@@ -136,7 +142,7 @@ const userResolvers = {
           let errField = Object.keys(err.keyValue)[0];
           throw new UserInputError(`${errField} already exists in Database!`);
         } else {
-          throw new GraphQLError(`Failed to register user: \n ${err.message}`);
+          throw new GraphQLError(`${err.message}`);
         }
       }
     },
@@ -144,21 +150,25 @@ const userResolvers = {
       if (!context.req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
-      const updatedUserInfo = new models.DB_People({
-        _id: args.id,
-        name: args.input.name,
-        avatar: args.input.avatar,
-        dialCode: args.input.dialCode,
-        phone: args.input.phone,
-      });
+      try {
+        const updatedUserInfo = new models.DB_People({
+          _id: args.id,
+          name: args.input.name,
+          avatar: args.input.avatar,
+          dialCode: args.input.dialCode,
+          phone: args.input.phone,
+        });
 
-      return await models.DB_People.findOneAndUpdate(
-        { _id: args.id },
-        updatedUserInfo,
-        {
-          new: true,
-        }
-      );
+        return await models.DB_People.findOneAndUpdate(
+          { _id: args.id },
+          updatedUserInfo,
+          {
+            new: true,
+          }
+        );
+      } catch (err) {
+        throw new GraphQLError(`${err.message}`);
+      }
     },
     updateUserRole: async (parent, args, context) => {
       if (!context.req.isAuth) {
