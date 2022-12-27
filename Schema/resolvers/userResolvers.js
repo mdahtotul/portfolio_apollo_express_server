@@ -95,7 +95,11 @@ const userResolvers = {
 
         await newOtp.save();
 
-        await sendOtpEmail(email, genOtp);
+        await sendOtpEmail(
+          email,
+          "Please use this following OTP to complete register!",
+          genOtp
+        );
         return `OTP sent to ${email}`;
       } catch (err) {
         console.log("Failed to send otp: \n", err);
