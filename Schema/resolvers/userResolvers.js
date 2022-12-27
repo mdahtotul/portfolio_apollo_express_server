@@ -17,6 +17,22 @@ const userResolvers = {
     getUser: async (parent, args, context) => {
       return await models.DB_People.findById(args.id);
     },
+    verifyOTP: async (parent, args, context) => {
+      const { otp, email } = args;
+      if (!otp || !email) {
+        throw new UserInputError("❌ OTP or Email is missing!");
+      }
+      const matchedOtp = await models.DB_OTP.findOne({
+        otp: otp,
+        userEmail: email,
+      });
+      console.log(matchedOtp);
+      if (!matchedOtp) {
+        return false;
+      } else {
+        return true;
+      }
+    },
     loginUser: async (parent, args, context) => {
       const { email, password } = args;
       if (!email || !password) {
@@ -90,6 +106,10 @@ const userResolvers = {
         if (!validateEmail(args.input.email)) {
           throw new UserInputError("❌ Invalid Email!");
         }
+        const matchedUser = await models.DB_People.findOne({
+          email: args.input.email,
+        });
+        if (matchedUser) return new UserInputError("❌ Email already exists!");
         const hashedPassword = await bcrypt.hash(args.input.password, salt);
         if (!hashedPassword) throw new Error("❌ Failed to hash password");
 
