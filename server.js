@@ -6,19 +6,13 @@ const typeDefs = require("./Schema/typeDefs");
 const connectDB = require("./config/mongooseDB");
 const colors = require("colors");
 const mergedResolvers = require("./Schema/resolvers");
-const session = require("express-session");
-const uuid = require("uuid");
-const passport = require("passport");
-const initPassport = require("./config/initPassport");
 const isAuthenticate = require("./middleware/isAuthenticate");
+const cookieParser = require("cookie-parser");
 
 const clientUrl =
   process.env.NODE_ENV === "production"
     ? process.env.CLIENT_URL
     : "http://localhost:3000";
-
-// passport initialization
-initPassport();
 
 // initialization
 const app = express();
@@ -28,23 +22,22 @@ const port = process.env.PORT || 4000;
 connectDB();
 
 // middleware
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", clientUrl);
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+//   );
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+//   next();
+// })
 app.use(express.json());
 app.use(isAuthenticate);
-// passport connection
-app.use(
-  session({
-    genid: (req) => {
-      return uuid.v4();
-    },
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: true },
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
+// parse cookie
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // running async apollo server
 async function runApolloServer() {

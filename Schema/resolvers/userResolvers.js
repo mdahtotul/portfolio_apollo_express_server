@@ -48,6 +48,7 @@ const userResolvers = {
         throw new Error("❌ Password is incorrect!");
       }
 
+      // generate token for cookies
       const token = jwt.sign(
         {
           userId: matchedUser._id,
@@ -55,8 +56,17 @@ const userResolvers = {
           userRole: matchedUser.role,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "48h" }
+        { expiresIn: process.env.JWT_EXPIRY }
       );
+      // response cookie
+      context.res.cookie(process.env.COOKIE_NAME, token, {
+        maxAge: process.env.JWT_EXPIRY,
+        httpOnly: true,
+        signed: true,
+      });
+
+      console.log(context.res.cookie);
+
       return {
         userId: matchedUser._id,
         userRole: matchedUser.role,
