@@ -7,7 +7,8 @@ const connectDB = require("./config/mongooseDB");
 const colors = require("colors");
 const mergedResolvers = require("./Schema/resolvers");
 const isAuthenticate = require("./middleware/isAuthenticate");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
+const { serialize } = require("cookie");
 
 const clientUrl =
   process.env.NODE_ENV === "production"
@@ -37,7 +38,7 @@ connectDB();
 app.use(express.json());
 app.use(isAuthenticate);
 // parse cookie
-app.use(cookieParser(process.env.COOKIE_SECRET));
+// app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // running async apollo server
 async function runApolloServer() {

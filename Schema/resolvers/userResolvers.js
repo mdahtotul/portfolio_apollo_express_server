@@ -33,7 +33,7 @@ const userResolvers = {
         return true;
       }
     },
-    loginUser: async (parent, args, context) => {
+    loginUser: async (parent, args, { req, res }) => {
       const { email, password } = args;
       if (!email || !password) {
         throw new UserInputError("❌ Email or Password is missing!");
@@ -59,19 +59,28 @@ const userResolvers = {
         { expiresIn: process.env.JWT_EXPIRY }
       );
       // response cookie
-      context.res.cookie(process.env.COOKIE_NAME, token, {
-        maxAge: process.env.JWT_EXPIRY,
-        httpOnly: true,
-        signed: true,
-      });
+      // context.res.cookie(process.env.COOKIE_NAME, token, {
+      //   maxAge: process.env.JWT_EXPIRY,
+      //   httpOnly: true,
+      //   signed: true,
+      //   secure: process.env.NODE_ENV !== "development",
+      // });
 
-      console.log(context.res.cookie);
+      // console.log(context.res);
+      // const cookieObj = serialize(process.env.COOKIE_NAME, token, {
+      //   maxAge: process.env.JWT_EXPIRY,
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV !== "development",
+      //   path: "/",
+      // });
 
+      // res.setHeader("Set-Cookie", cookieObj);
+      // console.log(res.cookie);
       return {
         userId: matchedUser._id,
         userRole: matchedUser.role,
         token: token,
-        tokenExpiration: 48,
+        tokenExpiration: process.env.JWT_EXPIRY,
       };
     },
   },
