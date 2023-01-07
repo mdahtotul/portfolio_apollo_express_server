@@ -58,30 +58,31 @@ const userResolvers = {
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRY }
       );
-      // response cookie
-      // context.res.cookie(process.env.COOKIE_NAME, token, {
-      //   maxAge: process.env.JWT_EXPIRY,
-      //   httpOnly: true,
-      //   signed: true,
-      //   secure: process.env.NODE_ENV !== "development",
-      // });
 
-      // console.log(context.res);
-      // const cookieObj = serialize(process.env.COOKIE_NAME, token, {
-      //   maxAge: process.env.JWT_EXPIRY,
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV !== "development",
-      //   path: "/",
-      // });
-
-      // res.setHeader("Set-Cookie", cookieObj);
-      // console.log(res.cookie);
       return {
         userId: matchedUser._id,
         userRole: matchedUser.role,
         token: token,
         tokenExpiration: process.env.JWT_EXPIRY,
       };
+    },
+    currentUser: async (parent, args, { req, res }) => {
+      if (!req.isAuth || !req.userId) {
+        return;
+      }
+      try {
+        const user = await models.DB_People.findById(req.userId);
+        if (!user) {
+          throw new Error("User not found! Please login first!");
+        }
+        return {
+          ...user._doc,
+          id: user._id,
+          password: "secured_password",
+        };
+      } catch (err) {
+        throw new Error(err.message);
+      }
     },
   },
 

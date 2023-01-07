@@ -59,6 +59,7 @@ const userType = gql`
     getUser(id: ID!): User
     verifyOTP(otp: String!, email: String!): Boolean!
     loginUser(email: String!, password: String!): AuthPayload!
+    currentUser: User
   }
 
   extend type Mutation {
