@@ -23,7 +23,7 @@ connectDB();
 
 // middleware
 // app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", clientUrl);
+//   res.setHeader("Access-Control-Allow-Origin", "*");
 //   res.setHeader(
 //     "Access-Control-Allow-Methods",
 //     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -33,7 +33,7 @@ connectDB();
 //     return res.sendStatus(200);
 //   }
 //   next();
-// })
+// });
 app.use(express.json());
 app.use(isAuthenticate);
 // parse cookie

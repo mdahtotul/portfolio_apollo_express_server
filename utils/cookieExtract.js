@@ -17,11 +17,11 @@ export function getCookie(name, cookie) {
 
 export function currentUserData(cookieName, cookie) {
   let userData = null;
-  console.log("cookieExtract", userData);
-  console.log("cookieExtract", cookie);
+  // console.log("cookieExtract", userData);
+  // console.log("cookieExtract", cookie);
   try {
     const token = getCookie(cookieName || "portfolio_2_0", cookie);
-    console.log(token);
+    // console.log(token);
     const decodedToken = extractJWT(token);
     userData = decodedToken;
   } catch (err) {
