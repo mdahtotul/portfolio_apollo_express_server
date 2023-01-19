@@ -45,10 +45,16 @@ const peopleSchema = Schema(
     cloudinary_id: {
       type: String,
     },
-    projects: [
+    projectsId: [
       {
         type: mongoose.Types.ObjectId,
         ref: "Project",
+      },
+    ],
+    reviewsId: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Review",
       },
     ],
   },
