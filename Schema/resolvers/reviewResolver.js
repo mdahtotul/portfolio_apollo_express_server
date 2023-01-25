@@ -17,8 +17,7 @@ const reviewResolvers = {
   // POPULATE: getting population data using  graphQL query
   Review: {
     reviewer: async (parent, args, context) => {
-      console.log(parent.reviewerId);
-      return await models.DB_People.find({ _id: { $in: parent.reviewerId } });
+      return await models.DB_People.findById(parent.reviewerId);
     },
   },
 
