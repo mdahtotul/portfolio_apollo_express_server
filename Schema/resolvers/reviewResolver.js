@@ -4,7 +4,11 @@ const models = require("../../models");
 const reviewResolvers = {
   Query: {
     listReview: async (parent, args, { req, res }) => {
-      return await models.DB_Review.find({});
+      const foundReview = await models.DB_Review.find({});
+      foundReview.sort(
+        (a, b) => new Date(b?.createdAt) - new Date(a?.createdAt)
+      );
+      return foundReview;
     },
     getReview: async (parent, args, { req, res }) => {
       return await models.DB_Review.findById(args.id);
