@@ -4,7 +4,11 @@ const models = require("../../models");
 const reviewResolvers = {
   Query: {
     listReview: async (parent, args, { req, res }) => {
-      return await models.DB_Review.find({});
+      const foundReview = await models.DB_Review.find({});
+      foundReview.sort(
+        (a, b) => new Date(b?.createdAt) - new Date(a?.createdAt)
+      );
+      return foundReview;
     },
     getReview: async (parent, args, { req, res }) => {
       return await models.DB_Review.findById(args.id);
@@ -17,8 +21,7 @@ const reviewResolvers = {
   // POPULATE: getting population data using  graphQL query
   Review: {
     reviewer: async (parent, args, context) => {
-      console.log(parent.reviewerId);
-      return await models.DB_People.find({ _id: { $in: parent.reviewerId } });
+      return await models.DB_People.findById(parent.reviewerId);
     },
   },
 

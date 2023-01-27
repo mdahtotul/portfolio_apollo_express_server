@@ -17,7 +17,7 @@ const reviewType = gql`
     reviewerId: ID
     projectStartDate: String
     projectEndDate: String
-    rating: Float
+    rating: Float!
     comment: String!
   }
 

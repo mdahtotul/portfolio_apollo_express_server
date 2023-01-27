@@ -7,6 +7,7 @@ const userType = gql`
     email: String!
     password: String!
     avatar: String
+    designation: String
     role: UserRole
     dialCode: String
     phone: String
@@ -39,6 +40,7 @@ const userType = gql`
     password: String!
     avatar: String
     role: UserRole = Visitor
+    designation: String
     dialCode: String
     phone: String
   }
@@ -47,6 +49,7 @@ const userType = gql`
     name: String
     avatar: String
     dialCode: String
+    designation: String
     phone: String
   }
 

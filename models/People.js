@@ -34,6 +34,10 @@ const peopleSchema = Schema(
         partialFilterExpression: { phone: { $type: "string" } },
       },
     },
+    designation: {
+      type: String,
+      trim: true,
+    },
     avatar: {
       type: String,
     },

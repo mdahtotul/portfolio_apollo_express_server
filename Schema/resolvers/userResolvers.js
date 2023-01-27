@@ -148,6 +148,7 @@ const userResolvers = {
           password: hashedPassword,
           avatar: args.input.avatar || "",
           role: args.input.role,
+          designation: args.input.designation || "",
           dialCode: args.input.dialCode || "",
           phone: args.input.phone || null,
         });
@@ -179,6 +180,7 @@ const userResolvers = {
           _id: args.id,
           name: args.input.name,
           avatar: args.input.avatar,
+          designation: args.input.designation,
           dialCode: args.input.dialCode,
           phone: args.input.phone,
         });
