@@ -15,7 +15,17 @@ const userResolvers = {
       return await models.DB_People.find({});
     },
     getUser: async (parent, args, context) => {
-      return await models.DB_People.findById(args.id);
+      try {
+        const user = await models.DB_People.findById(args.id);
+        if (!user) return null;
+        return {
+          ...user._doc,
+          id: user._id,
+          password: "secured_password",
+        };
+      } catch (err) {
+        throw new Error(err.message);
+      }
     },
     verifyOTP: async (parent, args, context) => {
       const { otp, email } = args;
