@@ -8,6 +8,7 @@ const {
 const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
+const { cloudinary } = require("../../config/cloudinary");
 
 const userResolvers = {
   Query: {
@@ -161,6 +162,10 @@ const userResolvers = {
           designation: args.input.designation || "",
           dialCode: args.input.dialCode || "",
           phone: args.input.phone || null,
+          cloudinary_id: args.input.cloudinary_id || "",
+          flag: args.input.flag || "",
+          country: args.input.country || "",
+          numLen: args.input.numLen || null,
         });
         // saving new user to database
         const result = await newUser.save();
@@ -181,10 +186,14 @@ const userResolvers = {
         }
       }
     },
-    updateUser: async (parent, args, context) => {
-      if (!context.req.isAuth) {
+    updateUser: async (parent, args, { req, res }) => {
+      if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
+      // if (args?.input?.avatar) {
+      //   const uploadFile = await cloudinary.uploader.upload(args.input.avatar);
+      //   console.log(uploadFile);
+      // }
       try {
         const updatedUserInfo = new models.DB_People({
           _id: args.id,
@@ -193,6 +202,10 @@ const userResolvers = {
           designation: args.input.designation,
           dialCode: args.input.dialCode,
           phone: args.input.phone,
+          cloudinary_id: args.input.cloudinary_id,
+          flag: args.input.flag,
+          country: args.input.country,
+          numLen: args.input.numLen,
         });
 
         return await models.DB_People.findOneAndUpdate(
