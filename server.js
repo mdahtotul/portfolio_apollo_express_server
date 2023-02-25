@@ -8,6 +8,7 @@ const colors = require("colors");
 const mergedResolvers = require("./Schema/resolvers");
 const isAuthenticate = require("./middleware/isAuthenticate");
 const cookieParser = require("cookie-parser");
+const { graphqlUploadExpress } = require("graphql-upload");
 
 const clientUrl =
   process.env.NODE_ENV === "production"
@@ -41,11 +42,13 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // running async apollo server
 async function runApolloServer() {
+  app.use(graphqlUploadExpress());
   const server = new ApolloServer({
     typeDefs,
     resolvers: mergedResolvers,
     context: ({ req, res }) => ({ req, res }),
     introspection: true,
+    // csrfPrevention: true,
   });
   await server.start();
   server.applyMiddleware({ app });
