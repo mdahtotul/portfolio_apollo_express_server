@@ -69,6 +69,7 @@ const userResolvers = {
           userId: matchedUser._id,
           userEmail: matchedUser.email,
           userRole: matchedUser.role,
+          imgId: matchedUser.cloudinary_id,
         },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRY }
@@ -228,39 +229,43 @@ const userResolvers = {
       if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
+      let prvImgId = req.imgId;
       try {
         const imageName = await readFile(file);
         const mainDir = path.dirname(require.main.filename);
         let newFile = `${mainDir}/uploads/${imageName}`;
         // console.log("❓newFile", newFile);
         if (imageName && newFile) {
-          setTimeout(async () => {
-            console.log("imageName", newFile);
-            const uploadFile = await cloudinary.v2.uploader.upload(newFile);
-            // console.log(uploadFile);
-            if (!uploadFile) throw new Error("Failed to upload image");
-            const updatedUserRole = new models.DB_People({
-              _id: req.userId,
-              avatar: uploadFile?.secure_url,
-              cloudinary_id: uploadFile?.public_id,
-            });
+          // using setTimeout to wait for file to be saved
+          // setTimeout(async () => {
+          const uploadFile = await cloudinary.v2.uploader.upload(newFile);
+          console.log(uploadFile);
+          if (!uploadFile) throw new Error("Failed to upload image");
+          const updatedUserRole = new models.DB_People({
+            _id: req.userId,
+            avatar: uploadFile?.secure_url,
+            cloudinary_id: uploadFile?.public_id,
+          });
+          // deleting file from uploads folder after uploading to cloudinary
+          unlink(newFile, (err) => {
+            if (err) {
+              console.log(err);
+              throw new Error("Failed to delete image");
+            }
+            console.log("Image deleted from uploads folder");
+          });
 
-            unlink(newFile, (err) => {
-              if (err) {
-                console.log(err);
-                throw new Error("Failed to delete image");
-              }
-              console.log("Image deleted");
-            });
+          // deleting previous image from cloudinary
+          // await cloudinary.v2.uploader.destroy(prvImgId);
 
-            return await models.DB_People.findOneAndUpdate(
-              { _id: req.userId },
-              updatedUserRole,
-              {
-                new: true,
-              }
-            );
-          }, 1000);
+          return await models.DB_People.findOneAndUpdate(
+            { _id: req.userId },
+            updatedUserRole,
+            {
+              new: true,
+            }
+          );
+          // }, 1000);
         }
       } catch (err) {
         console.log(err);
@@ -295,18 +300,6 @@ const userResolvers = {
       return await models.DB_People.findByIdAndDelete(args.id);
     },
   },
-  // CloudinaryOptions: new GraphQLScalarType({
-  //   name: "CloudinaryOptions",
-  //   parseValue(value) {
-  //     return value;
-  //   },
-  //   serialize(value) {
-  //     return value;
-  //   },
-  //   parseLiteral(ast) {
-  //     console.log(ast.value);
-  //   },
-  // }),
 };
 
 module.exports = userResolvers;

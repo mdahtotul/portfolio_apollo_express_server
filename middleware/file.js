@@ -10,12 +10,11 @@ module.exports.readFile = async (file) => {
     name = `single${Math.floor(Math.random() * 1000000) + 1}`;
     fullName = `${name}-${Date.now()}${ext}`;
     let url = join(__dirname, `../uploads/${fullName}`);
-    const imageStream = createWriteStream(url);
-    await stream.pipe(imageStream);
-    const baseUrl = process.env.BASE_URL || "http://localhost";
-    const port = process.env.PORT || 4000;
-    url = `${baseUrl}:${port}/${fullName}`;
-    // return url;
+
+    await new Promise((resolve, reject) => {
+      const imageStream = createWriteStream(url);
+      stream.pipe(imageStream).on("finish", resolve).on("error", reject);
+    });
   } catch (err) {
     console.log("Error in middleware/file.js ❌❌❌❌❌❌");
     console.log(err);
