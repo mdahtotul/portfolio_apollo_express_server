@@ -1,7 +1,9 @@
 // external modules
 const express = require("express");
+const { join } = require("path");
 require("dotenv").config();
 const { ApolloServer } = require("apollo-server-express");
+const cors = require("cors");
 const typeDefs = require("./Schema/typeDefs");
 const connectDB = require("./config/mongooseDB");
 const colors = require("colors");
@@ -9,6 +11,7 @@ const mergedResolvers = require("./Schema/resolvers");
 const isAuthenticate = require("./middleware/isAuthenticate");
 const cookieParser = require("cookie-parser");
 const { graphqlUploadExpress } = require("graphql-upload");
+// const expressUpload = require("express-fileupload");
 
 const clientUrl =
   process.env.NODE_ENV === "production"
@@ -35,10 +38,13 @@ connectDB();
 //   }
 //   next();
 // });
+app.use(cors());
 app.use(express.json());
 app.use(isAuthenticate);
+app.use(express.static(join(__dirname, "./uploads")));
 // parse cookie
 app.use(cookieParser(process.env.COOKIE_SECRET));
+// app.use(expressUpload());
 
 // running async apollo server
 async function runApolloServer() {
@@ -78,6 +84,18 @@ app.get("/", (req, res) =>
       Thanks for visiting this server🤝`
   )
 );
+// uploading file to Upload folder in the root
+// app.post("/upload", (req, res) => {
+//   console.log("🚀🚀", req.files);
+//   let uploadedFile = req.files.file;
+//   const filename = uploadedFile.name;
+//   uploadedFile.mv(`${__dirname}/Upload/${filename}`, (err) => {
+//     if (err) {
+//       return res.status(500).send(err);
+//     }
+//     return res.json(filename);
+//   });
+// });
 // watching server on console with some styles
 app.listen({ port: port }, () =>
   console.log(

@@ -1,6 +1,6 @@
 // external imports
 require("dotenv").config();
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary");
 
 // setting cloud data variable
 cloudinary.config({
@@ -9,8 +9,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
-
-cloudinary.config();
 
 // export function
 module.exports = cloudinary;
