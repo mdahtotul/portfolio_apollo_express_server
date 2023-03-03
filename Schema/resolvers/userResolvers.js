@@ -8,7 +8,10 @@ const {
 const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
-const { cloudinary } = require("../../config/cloudinary");
+require("dotenv").config();
+const { readFile, removeFile } = require("../../middleware/file");
+const path = require("path");
+const cloudinary = require("../../config/cloudinary");
 
 const userResolvers = {
   Query: {
@@ -190,10 +193,7 @@ const userResolvers = {
       if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
-      // if (args?.input?.avatar) {
-      //   const uploadFile = await cloudinary.uploader.upload(args.input.avatar);
-      //   console.log(uploadFile);
-      // }
+
       try {
         const updatedUserInfo = new models.DB_People({
           _id: args.id,
@@ -217,6 +217,48 @@ const userResolvers = {
         );
       } catch (err) {
         throw new GraphQLError(`${err.message}`);
+      }
+    },
+    uploadProfileImg: async (parent, { file }, { req, res }) => {
+      if (!req.isAuth) {
+        throw new AuthenticationError("Unauthenticated!");
+      }
+      try {
+        const imageName = await readFile(file); // reading file and saving to uploads folder
+        const mainDir = path.dirname(require.main.filename);
+        let newFile = `${mainDir}/uploads/${imageName}`; // new file path
+        const userDetails = await models.DB_People.findById(req.userId);
+        let prvImgId = userDetails.cloudinary_id; // previous image id
+        if (imageName && newFile) {
+          const uploadFile = await cloudinary.v2.uploader.upload(newFile);
+          if (!uploadFile) {
+            removeFile(newFile);
+            throw new Error("Failed to upload image");
+          }
+
+          const updatedUser = new models.DB_People({
+            _id: req.userId,
+            avatar: uploadFile?.secure_url,
+            cloudinary_id: uploadFile?.public_id,
+          });
+          // deleting file from uploads folder after uploading to cloudinary
+          removeFile(newFile);
+
+          // deleting previous image from cloudinary
+          prvImgId && (await cloudinary.v2.uploader.destroy(prvImgId));
+
+          const updatedUserInfo = await models.DB_People.findOneAndUpdate(
+            { _id: req.userId },
+            updatedUser,
+            {
+              new: true,
+            }
+          );
+          return updatedUserInfo;
+        }
+      } catch (err) {
+        console.log(err);
+        return GraphQLError(`${err.message}`);
       }
     },
     updateUserRole: async (parent, args, context) => {

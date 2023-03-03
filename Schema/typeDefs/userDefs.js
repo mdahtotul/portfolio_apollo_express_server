@@ -17,6 +17,10 @@ const userType = gql`
     numLen: String
   }
 
+  # type CloudinaryOptions {
+  #   name: String
+  # }
+
   type AuthPayload {
     userId: ID!
     userRole: UserRole
@@ -81,6 +85,8 @@ const userType = gql`
     getOtp(email: String!): String!
     createUser(input: CreateUserInput!): User
     updateUser(id: ID!, input: UpdateUserInput!): User
+    uploadProfileImg(file: Upload!): User
+    # uploadProfileImg(file: String!): User
     updateUserPassword(id: ID!, password: String!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
