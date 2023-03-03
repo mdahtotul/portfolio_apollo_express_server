@@ -8,6 +8,10 @@ const {
 const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
+require("dotenv").config();
+const { readFile, removeFile } = require("../../middleware/file");
+const path = require("path");
+const cloudinary = require("../../config/cloudinary");
 
 const userResolvers = {
   Query: {
@@ -15,7 +19,17 @@ const userResolvers = {
       return await models.DB_People.find({});
     },
     getUser: async (parent, args, context) => {
-      return await models.DB_People.findById(args.id);
+      try {
+        const user = await models.DB_People.findById(args.id);
+        if (!user) return null;
+        return {
+          ...user._doc,
+          id: user._id,
+          password: "secured_password",
+        };
+      } catch (err) {
+        throw new Error(err.message);
+      }
     },
     verifyOTP: async (parent, args, context) => {
       const { otp, email } = args;
@@ -151,6 +165,10 @@ const userResolvers = {
           designation: args.input.designation || "",
           dialCode: args.input.dialCode || "",
           phone: args.input.phone || null,
+          cloudinary_id: args.input.cloudinary_id || "",
+          flag: args.input.flag || "",
+          country: args.input.country || "",
+          numLen: args.input.numLen || null,
         });
         // saving new user to database
         const result = await newUser.save();
@@ -171,10 +189,11 @@ const userResolvers = {
         }
       }
     },
-    updateUser: async (parent, args, context) => {
-      if (!context.req.isAuth) {
+    updateUser: async (parent, args, { req, res }) => {
+      if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
+
       try {
         const updatedUserInfo = new models.DB_People({
           _id: args.id,
@@ -183,6 +202,10 @@ const userResolvers = {
           designation: args.input.designation,
           dialCode: args.input.dialCode,
           phone: args.input.phone,
+          cloudinary_id: args.input.cloudinary_id,
+          flag: args.input.flag,
+          country: args.input.country,
+          numLen: args.input.numLen,
         });
 
         return await models.DB_People.findOneAndUpdate(
@@ -194,6 +217,48 @@ const userResolvers = {
         );
       } catch (err) {
         throw new GraphQLError(`${err.message}`);
+      }
+    },
+    uploadProfileImg: async (parent, { file }, { req, res }) => {
+      if (!req.isAuth) {
+        throw new AuthenticationError("Unauthenticated!");
+      }
+      try {
+        const imageName = await readFile(file); // reading file and saving to uploads folder
+        const mainDir = path.dirname(require.main.filename);
+        let newFile = `${mainDir}/uploads/${imageName}`; // new file path
+        const userDetails = await models.DB_People.findById(req.userId);
+        let prvImgId = userDetails.cloudinary_id; // previous image id
+        if (imageName && newFile) {
+          const uploadFile = await cloudinary.v2.uploader.upload(newFile);
+          if (!uploadFile) {
+            removeFile(newFile);
+            throw new Error("Failed to upload image");
+          }
+
+          const updatedUser = new models.DB_People({
+            _id: req.userId,
+            avatar: uploadFile?.secure_url,
+            cloudinary_id: uploadFile?.public_id,
+          });
+          // deleting file from uploads folder after uploading to cloudinary
+          removeFile(newFile);
+
+          // deleting previous image from cloudinary
+          prvImgId && (await cloudinary.v2.uploader.destroy(prvImgId));
+
+          const updatedUserInfo = await models.DB_People.findOneAndUpdate(
+            { _id: req.userId },
+            updatedUser,
+            {
+              new: true,
+            }
+          );
+          return updatedUserInfo;
+        }
+      } catch (err) {
+        console.log(err);
+        return GraphQLError(`${err.message}`);
       }
     },
     updateUserRole: async (parent, args, context) => {

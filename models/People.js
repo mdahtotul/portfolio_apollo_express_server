@@ -21,8 +21,20 @@ const peopleSchema = Schema(
       type: String,
       required: true,
     },
+    flag: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
     dialCode: {
       type: String,
+      trim: true,
+    },
+    numLen: {
+      type: Number,
       trim: true,
     },
     phone: {

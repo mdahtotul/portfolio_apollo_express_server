@@ -7,11 +7,19 @@ const userType = gql`
     email: String!
     password: String!
     avatar: String
+    cloudinary_id: String
     designation: String
     role: UserRole
     dialCode: String
+    flag: String
+    country: String
     phone: String
+    numLen: String
   }
+
+  # type CloudinaryOptions {
+  #   name: String
+  # }
 
   type AuthPayload {
     userId: ID!
@@ -42,15 +50,23 @@ const userType = gql`
     role: UserRole = Visitor
     designation: String
     dialCode: String
+    flag: String
+    country: String
+    cloudinary_id: String
     phone: String
+    numLen: Int
   }
 
   input UpdateUserInput {
     name: String
     avatar: String
+    cloudinary_id: String
     dialCode: String
     designation: String
     phone: String
+    flag: String
+    country: String
+    numLen: Int
   }
 
   input UpdateUserRoleInput {
@@ -69,7 +85,9 @@ const userType = gql`
     getOtp(email: String!): String!
     createUser(input: CreateUserInput!): User
     updateUser(id: ID!, input: UpdateUserInput!): User
-    UpdateUserPassword(id: ID!, password: String!): User
+    uploadProfileImg(file: Upload!): User
+    # uploadProfileImg(file: String!): User
+    updateUserPassword(id: ID!, password: String!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
   }
