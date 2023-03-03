@@ -9,10 +9,9 @@ const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
 require("dotenv").config();
-const { readFile } = require("../../middleware/file");
+const { readFile, removeFile } = require("../../middleware/file");
 const path = require("path");
 const cloudinary = require("../../config/cloudinary");
-const { unlink } = require("fs");
 
 const userResolvers = {
   Query: {
@@ -69,7 +68,6 @@ const userResolvers = {
           userId: matchedUser._id,
           userEmail: matchedUser.email,
           userRole: matchedUser.role,
-          imgId: matchedUser.cloudinary_id,
         },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRY }
@@ -195,11 +193,7 @@ const userResolvers = {
       if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
-      console.log(args);
-      // if (args?.input?.avatar) {
-      //   const uploadFile = await cloudinary.uploader.upload(args.input.avatar);
-      //   console.log(uploadFile);
-      // }
+
       try {
         const updatedUserInfo = new models.DB_People({
           _id: args.id,
@@ -229,43 +223,38 @@ const userResolvers = {
       if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
-      let prvImgId = req.imgId;
       try {
-        const imageName = await readFile(file);
+        const imageName = await readFile(file); // reading file and saving to uploads folder
         const mainDir = path.dirname(require.main.filename);
-        let newFile = `${mainDir}/uploads/${imageName}`;
-        // console.log("❓newFile", newFile);
+        let newFile = `${mainDir}/uploads/${imageName}`; // new file path
+        const userDetails = await models.DB_People.findById(req.userId);
+        let prvImgId = userDetails.cloudinary_id; // previous image id
         if (imageName && newFile) {
-          // using setTimeout to wait for file to be saved
-          // setTimeout(async () => {
           const uploadFile = await cloudinary.v2.uploader.upload(newFile);
-          console.log(uploadFile);
-          if (!uploadFile) throw new Error("Failed to upload image");
-          const updatedUserRole = new models.DB_People({
+          if (!uploadFile) {
+            removeFile(newFile);
+            throw new Error("Failed to upload image");
+          }
+
+          const updatedUser = new models.DB_People({
             _id: req.userId,
             avatar: uploadFile?.secure_url,
             cloudinary_id: uploadFile?.public_id,
           });
           // deleting file from uploads folder after uploading to cloudinary
-          unlink(newFile, (err) => {
-            if (err) {
-              console.log(err);
-              throw new Error("Failed to delete image");
-            }
-            console.log("Image deleted from uploads folder");
-          });
+          removeFile(newFile);
 
           // deleting previous image from cloudinary
-          // await cloudinary.v2.uploader.destroy(prvImgId);
+          prvImgId && (await cloudinary.v2.uploader.destroy(prvImgId));
 
-          return await models.DB_People.findOneAndUpdate(
+          const updatedUserInfo = await models.DB_People.findOneAndUpdate(
             { _id: req.userId },
-            updatedUserRole,
+            updatedUser,
             {
               new: true,
             }
           );
-          // }, 1000);
+          return updatedUserInfo;
         }
       } catch (err) {
         console.log(err);

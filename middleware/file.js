@@ -1,7 +1,7 @@
 const { parse, join } = require("path");
-const { createWriteStream } = require("fs");
+const { createWriteStream, unlink } = require("fs");
 
-module.exports.readFile = async (file) => {
+const readFile = async (file) => {
   let fullName;
   try {
     const { createReadStream, filename } = await file;
@@ -22,3 +22,15 @@ module.exports.readFile = async (file) => {
     return fullName;
   }
 };
+
+const removeFile = async (filePath) => {
+  unlink(filePath, (err) => {
+    if (err) {
+      console.log(err);
+      throw new Error("Failed to delete image");
+    }
+    console.log("Image deleted from uploads folder");
+  });
+};
+
+module.exports = { readFile, removeFile };

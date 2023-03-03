@@ -1,0 +1,2 @@
+This folder is important for image uploading to cloudinary.
+Don't delete this folder.
