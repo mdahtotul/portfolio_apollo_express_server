@@ -26,6 +26,7 @@ const readFile = async (file) => {
 const removeFile = async (filePath) => {
   unlink(filePath, (err) => {
     if (err) {
+      console.log("Error in middleware/file.js ❌❌❌❌❌❌");
       console.log(err);
       throw new Error("Failed to delete image");
     }
