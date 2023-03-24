@@ -189,6 +189,54 @@ const userResolvers = {
         }
       }
     },
+    updateUserPassword: async (parent, args, context) => {
+      try {
+        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+        // regex email validation
+        if (!validateEmail(args?.email)) {
+          throw new UserInputError("Invalid Email!");
+        }
+        // check if email already exists
+        const matchedUser = await models.DB_People.findOne({
+          email: args.email,
+        });
+        if (!matchedUser) return new UserInputError("Email not found!");
+        // hashing password
+        const hashedPassword = await bcrypt.hash(args?.password, salt);
+        if (!hashedPassword) throw new Error("Failed to hash password");
+        // updating user password
+        const updatedUserInfo = new models.DB_People({
+          _id: matchedUser._id,
+          password: hashedPassword,
+        });
+
+        const result = await models.DB_People.findOneAndUpdate(
+          { _id: matchedUser._id },
+          updatedUserInfo,
+          {
+            new: true,
+          }
+        );
+
+        return {
+          ...result._doc,
+          id: result._id,
+          password: "secured_password",
+        };
+      } catch (err) {
+        console.log(
+          "❌ ~ file: userResolvers.js:227 ~ updateUserPassword: ~ err:",
+          err
+        );
+        console.log(err.keyValue);
+        if (err.code === 11000) {
+          let errField = Object.keys(err.keyValue)[0];
+          throw new UserInputError(`${errField} already exists in Database!`);
+        } else {
+          throw new GraphQLError(`${err.message}`);
+        }
+      }
+    },
     updateUser: async (parent, args, { req, res }) => {
       if (!req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
@@ -208,13 +256,19 @@ const userResolvers = {
           numLen: args.input.numLen,
         });
 
-        return await models.DB_People.findOneAndUpdate(
+        const result = await models.DB_People.findOneAndUpdate(
           { _id: args.id },
           updatedUserInfo,
           {
             new: true,
           }
         );
+
+        return {
+          ...result._doc,
+          id: result._id,
+          password: "secured_password",
+        };
       } catch (err) {
         throw new GraphQLError(`${err.message}`);
       }
@@ -279,9 +333,9 @@ const userResolvers = {
       );
     },
     deleteUser: async (parent, args, context) => {
-      console.log("is Auth", context.req.isAuth);
-      console.log("userID", context.req.userId);
-      console.log("userRole", context.req.userRole);
+      // console.log("is Auth", context.req.isAuth);
+      // console.log("userID", context.req.userId);
+      // console.log("userRole", context.req.userRole);
       if (!context.req.isAuth) {
         throw new AuthenticationError("Unauthenticated!");
       }
