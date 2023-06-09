@@ -4,7 +4,8 @@ const models = require("../../models");
 const projectResolvers = {
   Query: {
     listProject: async (parent, args, context) => {
-      return await models.DB_Project.find({});
+      let projects = await models.DB_Project.find({}).sort({ rank: 1 });
+      return projects;
     },
     getProject: async (parent, args, context) => {
       return await models.DB_Project.findById(args.id);

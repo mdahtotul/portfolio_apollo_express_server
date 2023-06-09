@@ -7,7 +7,7 @@ const projectType = gql`
     slug: String!
     categoriesId: [ID!]!
     categories: [Category]
-    des: [String]
+    des: String
     tagsId: [ID!]
     tags: [Tag]
     rank: Float
@@ -63,7 +63,7 @@ const projectType = gql`
   }
 
   extend type Query {
-    listProject: [Project!]
+    listProject: [Project]
     getProject(id: ID!): Project!
     getProjectBySlug(slug: String!): Project!
   }

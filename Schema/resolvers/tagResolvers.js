@@ -3,7 +3,9 @@ const models = require("../../models");
 const tagResolvers = {
   Query: {
     listTag: async (parent, args, context) => {
-      return await models.DB_Tag.find({});
+      return await models.DB_Tag.find({})
+        .collation({ locale: "en_US", strength: 2 })
+        .sort({ name: 1 });
     },
     getTag: async (parent, args, context) => {
       return await models.DB_Tag.findById(args.id);
