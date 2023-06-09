@@ -3,7 +3,9 @@ const models = require("../../models");
 const categoryResolvers = {
   Query: {
     listCategory: async (parent, args, context) => {
-      const categories = await models.DB_Category.find({});
+      const categories = await models.DB_Category.find({})
+        .collation({ locale: "en_US", strength: 2 })
+        .sort({ name: 1 });
       return categories;
     },
 
