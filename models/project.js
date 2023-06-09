@@ -53,7 +53,7 @@ const projectSchema = new Schema(
     thumb_img: {
       type: String,
     },
-    sub_img: [String],
+    sub_images: [String],
   },
   {
     timestamps: true,

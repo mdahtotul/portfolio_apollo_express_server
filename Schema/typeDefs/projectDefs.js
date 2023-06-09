@@ -19,7 +19,7 @@ const projectType = gql`
     client_repo: String
     server_repo: String
     thumb_img: String
-    sub_img: [String]
+    sub_images: [String]
   }
 
   input CreateProjectInput {
@@ -36,7 +36,7 @@ const projectType = gql`
     client_repo: String
     server_repo: String
     thumb_img: String
-    sub_img: [String]
+    sub_images: [String]
   }
 
   input UpdateProjectInput {
@@ -53,7 +53,7 @@ const projectType = gql`
     client_repo: String
     server_repo: String
     thumb_img: String
-    sub_img: [String]
+    sub_images: [String]
   }
 
   enum ProjectStatus {
