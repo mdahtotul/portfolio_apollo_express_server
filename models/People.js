@@ -23,11 +23,9 @@ const peopleSchema = Schema(
     },
     flag: {
       type: String,
-      required: true,
     },
     country: {
       type: String,
-      required: true,
     },
     dialCode: {
       type: String,
