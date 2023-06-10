@@ -4,6 +4,7 @@ const DB_Project = require("./project");
 const DB_Review = require("./Review");
 const DB_Tag = require("./Tag");
 const DB_OTP = require("./OTP");
+const DB_Blog = require("./Blog");
 
 module.exports = {
   DB_Category,
@@ -12,4 +13,5 @@ module.exports = {
   DB_Review,
   DB_Tag,
   DB_OTP,
+  DB_Blog,
 };

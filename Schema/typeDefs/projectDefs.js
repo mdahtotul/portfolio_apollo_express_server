@@ -64,7 +64,7 @@ const projectType = gql`
 
   extend type Query {
     listProject: [Project]
-    getProject(id: ID!): Project!
+    getProject(id: ID!): Project
     getProjectBySlug(slug: String!): Project!
   }
 

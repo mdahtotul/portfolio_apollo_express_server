@@ -4,6 +4,7 @@ const rootType = require("./rootDefs");
 const tagType = require("./tagDefs");
 const userType = require("./userDefs");
 const reviewType = require("./reviewDefs");
+const blogType = require("./blogDefs");
 
 const typeDefsArray = [
   rootType,
@@ -12,6 +13,7 @@ const typeDefsArray = [
   tagType,
   userType,
   reviewType,
+  blogType,
 ];
 
 module.exports = typeDefsArray;

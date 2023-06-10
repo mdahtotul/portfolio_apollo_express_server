@@ -13,6 +13,12 @@ const tagSchema = new Schema({
       // ref: "Project",
     },
   ],
+  blogsId: [
+    {
+      type: mongoose.Types.ObjectId,
+      // ref: "Blog",
+    },
+  ],
 });
 
 const Tag = model("Tag", tagSchema);
