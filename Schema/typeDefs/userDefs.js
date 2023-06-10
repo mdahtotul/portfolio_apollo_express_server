@@ -87,7 +87,7 @@ const userType = gql`
     updateUser(id: ID!, input: UpdateUserInput!): User
     uploadProfileImg(file: Upload!): User
     # uploadProfileImg(file: String!): User
-    updateUserPassword(id: ID!, password: String!): User
+    updateUserPassword(email: String!, password: String!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
   }

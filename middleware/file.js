@@ -6,7 +6,7 @@ const readFile = async (file) => {
   try {
     const { createReadStream, filename } = await file;
     const stream = createReadStream();
-    let { ext, name } = parse(filename);
+    let { ext, name } = parse(fileNname);
     name = `single${Math.floor(Math.random() * 1000000) + 1}`;
     fullName = `${name}-${Date.now()}${ext}`;
     let url = join(__dirname, `../uploads/${fullName}`);
