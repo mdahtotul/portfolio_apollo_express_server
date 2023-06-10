@@ -1,6 +1,6 @@
 const { AuthenticationError } = require("apollo-server-express");
 const models = require("../../models");
-
+// TODO: everything needs to check before deploy
 const blogResolvers = {
   Query: {
     listBlog: async (parent, args, context) => {
