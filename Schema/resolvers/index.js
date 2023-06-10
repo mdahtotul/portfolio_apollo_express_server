@@ -6,6 +6,7 @@ const tagResolvers = require("./tagResolvers");
 const userResolvers = require("./userResolvers");
 // const uploadResolvers = require("./uploadResolvers");
 const { GraphQLUpload } = require("graphql-upload");
+const blogResolvers = require("./blogResolvers");
 
 const uploadInitResolvers = {
   Upload: GraphQLUpload,
@@ -18,6 +19,7 @@ const mergedResolvers = _.merge(
   tagResolvers,
   userResolvers,
   reviewResolvers,
+  blogResolvers,
   uploadInitResolvers
   // uploadResolvers
 );

@@ -146,3 +146,5 @@ const blogResolvers = {
     },
   },
 };
+
+module.exports = blogResolvers;
