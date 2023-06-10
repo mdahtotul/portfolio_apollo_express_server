@@ -13,6 +13,12 @@ const categorySchema = new Schema({
       ref: "Project",
     },
   ],
+  blogsId: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Blog",
+    },
+  ],
 });
 
 const Category = model("Category", categorySchema);
