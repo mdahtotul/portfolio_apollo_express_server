@@ -20,6 +20,8 @@ const projectType = gql`
     server_repo: String
     thumb_img: String
     sub_images: [String]
+    createdAt: String # Unix timestamp
+    updatedAt: String
   }
 
   input CreateProjectInput {

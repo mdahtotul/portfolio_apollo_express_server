@@ -19,6 +19,9 @@ const categoryResolvers = {
     projects: async (parent, args, context) => {
       return await models.DB_Project.find({ _id: { $in: parent.projectsId } });
     },
+    blogs: async (parent, args, context) => {
+      return await models.DB_Blog.find({ _id: { $in: parent.blogsId } });
+    },
   },
 
   Mutation: {

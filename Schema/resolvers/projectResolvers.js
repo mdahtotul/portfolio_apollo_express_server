@@ -139,31 +139,35 @@ const projectResolvers = {
       return updateProject;
     },
     deleteProject: async (parent, args, { req, res }) => {
-      if (!req.isAuth || !req.userId) {
-        throw new AuthenticationError("Unauthenticated!");
-      }
-      const project = await models.DB_Project.findByIdAndDelete(args.id);
-      // NOTE: removing projectsId from category
-      if (project?.categoriesId?.length > 0) {
-        project.categoriesId.forEach(async (category_id) => {
-          await models.DB_Category.updateOne(
-            { _id: category_id },
-            { $pull: { projectsId: project._id } }
-          );
-        });
-      }
+      try {
+        if (!req.isAuth || !req.userId || req.userRole !== "Admin") {
+          throw new AuthenticationError("Unauthenticated!");
+        }
+        const project = await models.DB_Project.findByIdAndDelete(args.id);
+        // NOTE: removing projectsId from category
+        if (project?.categoriesId?.length > 0) {
+          project.categoriesId.forEach(async (category_id) => {
+            await models.DB_Category.updateOne(
+              { _id: category_id },
+              { $pull: { projectsId: project._id } }
+            );
+          });
+        }
 
-      // NOTE: removing projectsId from tag
-      if (project?.tagsId?.length > 0) {
-        project.tagsId.forEach(async (tag_id) => {
-          await models.DB_Tag.updateOne(
-            { _id: tag_id },
-            { $pull: { projectsId: project._id } }
-          );
-        });
-      }
+        // NOTE: removing projectsId from tag
+        if (project?.tagsId?.length > 0) {
+          project.tagsId.forEach(async (tag_id) => {
+            await models.DB_Tag.updateOne(
+              { _id: tag_id },
+              { $pull: { projectsId: project._id } }
+            );
+          });
+        }
 
-      return project;
+        return project;
+      } catch (err) {
+        throw new Error(err);
+      }
     },
   },
 };

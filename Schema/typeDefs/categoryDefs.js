@@ -6,6 +6,8 @@ const categoryType = gql`
     name: String!
     projectsId: [ID!]
     projects: [Project!]
+    blogsId: [ID!]
+    blogs: [Blog!]
   }
 
   input CreateCategoryInput {

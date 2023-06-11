@@ -6,6 +6,8 @@ const tagType = gql`
     name: String!
     projectsId: [ID!]
     projects: [Project!]
+    blogsId: [ID!]
+    blogs: [Blog!]
   }
 
   input CreateTagInput {
