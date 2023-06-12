@@ -23,7 +23,7 @@ const reviewType = gql`
 
   input UpdateReviewInput {
     title: String!
-    reviewerId: ID!
+    reviewerId: ID
     projectStartDate: String
     projectEndDate: String
     rating: Float
