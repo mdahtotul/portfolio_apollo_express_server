@@ -33,7 +33,7 @@ const projectResolvers = {
   Mutation: {
     createProject: async (parent, args, { req, res }) => {
       // NOTE: check if user is authenticated
-      if (!req.isAuth || !req.userId) {
+      if (!req.isAuth || !req.userId || req.userRole !== "Admin") {
         throw new AuthenticationError("Unauthenticated! ⛔");
       }
 
@@ -88,7 +88,7 @@ const projectResolvers = {
       }
     },
     updateProject: async (parent, args, { req, res }) => {
-      if (!req.isAuth || !req.userId) {
+      if (!req.isAuth || !req.userId || req.userRole !== "Admin") {
         throw new AuthenticationError("Unauthenticated! ⛔");
       }
       const updateProjectInfo = new models.DB_Project({

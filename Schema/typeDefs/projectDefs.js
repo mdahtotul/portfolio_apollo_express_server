@@ -67,12 +67,12 @@ const projectType = gql`
   extend type Query {
     listProject: [Project]
     getProject(id: ID!): Project
-    getProjectBySlug(slug: String!): Project!
+    getProjectBySlug(slug: String!): Project
   }
 
   extend type Mutation {
-    createProject(input: CreateProjectInput!): Project!
-    updateProject(id: ID!, input: UpdateProjectInput!): Project!
+    createProject(input: CreateProjectInput!): Project
+    updateProject(id: ID!, input: UpdateProjectInput!): Project
     deleteProject(id: ID!): Project
   }
 `;
