@@ -34,7 +34,7 @@ const projectResolvers = {
     createProject: async (parent, args, { req, res }) => {
       // NOTE: check if user is authenticated
       if (!req.isAuth || !req.userId) {
-        throw new AuthenticationError("Unauthenticated!");
+        throw new AuthenticationError("Unauthenticated! ⛔");
       }
 
       const existProject = await models.DB_Project.findOne({
@@ -89,7 +89,7 @@ const projectResolvers = {
     },
     updateProject: async (parent, args, { req, res }) => {
       if (!req.isAuth || !req.userId) {
-        throw new AuthenticationError("Unauthenticated!");
+        throw new AuthenticationError("Unauthenticated! ⛔");
       }
       const updateProjectInfo = new models.DB_Project({
         _id: args.id,
@@ -141,7 +141,7 @@ const projectResolvers = {
     deleteProject: async (parent, args, { req, res }) => {
       try {
         if (!req.isAuth || !req.userId || req.userRole !== "Admin") {
-          throw new AuthenticationError("Unauthenticated!");
+          throw new AuthenticationError("Unauthenticated! ⛔");
         }
         const project = await models.DB_Project.findByIdAndDelete(args.id);
         // NOTE: removing projectsId from category
