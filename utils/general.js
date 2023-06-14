@@ -23,4 +23,18 @@ const loginStrategies = {
   git: "GITHUB",
 };
 
-module.exports = { otpGeneratorFunc, validateEmail, loginStrategies };
+const getIPAddress = (req) => {
+  return (ip =
+    req.headers["cf-connecting-ip"] ||
+    req.headers["x-real-ip"] ||
+    req.headers["x-forwarded-for"] ||
+    req.socket.remoteAddress ||
+    req.connection.remoteAddress);
+};
+
+module.exports = {
+  otpGeneratorFunc,
+  validateEmail,
+  loginStrategies,
+  getIPAddress,
+};

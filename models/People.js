@@ -48,6 +48,11 @@ const peopleSchema = Schema(
       type: String,
       trim: true,
     },
+    devices: [
+      {
+        type: Schema.Types.Object,
+      },
+    ],
     avatar: {
       type: String,
     },

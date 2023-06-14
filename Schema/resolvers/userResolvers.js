@@ -5,7 +5,11 @@ const {
   UserInputError,
   AuthenticationError,
 } = require("apollo-server-express");
-const { validateEmail, otpGeneratorFunc } = require("../../utils/general");
+const {
+  validateEmail,
+  otpGeneratorFunc,
+  getIPAddress,
+} = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
 require("dotenv").config();
@@ -48,37 +52,57 @@ const userResolvers = {
       }
     },
     loginUser: async (parent, args, { req, res }) => {
-      const { email, password } = args;
-      if (!email || !password) {
-        throw new UserInputError("❌ Email or Password is missing!");
-      }
+      try {
+        console.log(args);
+        const { email, password } = args;
+        if (!email || !password) {
+          throw new UserInputError("❌ Email or Password is missing!");
+        }
 
-      const matchedUser = await models.DB_People.findOne({ email: email });
-      if (!matchedUser) {
-        throw new Error("❌ User not found!");
-      }
-      const isMatched = await bcrypt.compare(password, matchedUser.password);
-      if (!isMatched) {
-        throw new Error("❌ Password is incorrect!");
-      }
+        const matchedUser = await models.DB_People.findOne({ email: email });
+        if (!matchedUser) {
+          throw new Error("❌ User not found!");
+        }
+        const isMatched = await bcrypt.compare(password, matchedUser.password);
+        if (!isMatched) {
+          throw new Error("❌ Password is incorrect!");
+        }
 
-      // generate token for cookies
-      const token = jwt.sign(
-        {
+        const deviceInfo = {
+          userIP: args?.userIP,
+          onMobile: args?.onMobile,
+          userPlatform: args?.userPlatform,
+          userAgent: args?.userAgent,
+          ipRegion: args?.ipRegion,
+          ipCountry: args?.ipCountry,
+        };
+
+        await models.DB_People.updateOne(
+          { _id: matchedUser._id },
+          { $addToSet: { devices: deviceInfo } }
+        );
+
+        // generate token for cookies
+        const token = jwt.sign(
+          {
+            userId: matchedUser._id,
+            userEmail: matchedUser.email,
+            userRole: matchedUser.role,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: process.env.JWT_EXPIRY }
+        );
+
+        return {
           userId: matchedUser._id,
-          userEmail: matchedUser.email,
           userRole: matchedUser.role,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRY }
-      );
-
-      return {
-        userId: matchedUser._id,
-        userRole: matchedUser.role,
-        token: token,
-        tokenExpiration: process.env.JWT_EXPIRY,
-      };
+          token: token,
+          tokenExpiration: process.env.JWT_EXPIRY,
+        };
+      } catch (err) {
+        console.log("❌ Failed to login user: \n", err);
+        throw new Error(err.message);
+      }
     },
     currentUser: async (parent, args, { req, res }) => {
       if (!req.isAuth || !req.userId) {

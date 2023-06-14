@@ -1,6 +1,12 @@
 const { gql } = require("apollo-server-express");
 
 const userType = gql`
+  type Device {
+    name: String!
+    OS: String!
+    IP: String
+  }
+
   type User {
     id: ID!
     name: String!
@@ -15,6 +21,7 @@ const userType = gql`
     country: String
     phone: String
     numLen: String
+    devices: [Device]
   }
 
   # type CloudinaryOptions {
@@ -77,7 +84,16 @@ const userType = gql`
     listUser: [User!]
     getUser(id: ID!): User
     verifyOTP(otp: String!, email: String!): Boolean!
-    loginUser(email: String!, password: String!): AuthPayload!
+    loginUser(
+      email: String!
+      password: String!
+      userIP: String
+      onMobile: Boolean
+      userPlatform: String
+      userAgent: String
+      ipRegion: String
+      ipCountry: String
+    ): AuthPayload!
     currentUser: User
   }
 
