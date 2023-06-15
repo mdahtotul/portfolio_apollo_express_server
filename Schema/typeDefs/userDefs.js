@@ -107,6 +107,16 @@ const userType = gql`
     updateUserPassword(email: String!, password: String!): User
     updateUserRole(id: ID!, input: UpdateUserRoleInput!): User
     deleteUser(id: ID!): User
+    removeDevice(
+      userId: ID!
+      userIP: String
+      onMobile: Boolean
+      userPlatform: String
+      userAgent: String
+      userBrowser: String
+      ipRegion: String
+      ipCountry: String
+    ): String
   }
 `;
 

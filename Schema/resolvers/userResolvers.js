@@ -363,6 +363,37 @@ const userResolvers = {
 
       return await models.DB_People.findByIdAndDelete(args.id);
     },
+
+    removeDevice: async (parent, args, { req, res }) => {
+      try {
+        const matchedUser = await models.DB_People.findOne({
+          _id: args.userId,
+        });
+        if (!matchedUser) {
+          throw new Error("❌ User not found!");
+        }
+
+        const deviceInfo = {
+          userIP: args?.userIP,
+          onMobile: args?.onMobile,
+          userPlatform: args?.userPlatform,
+          userAgent: args?.userAgent,
+          userBrowser: args?.userBrowser,
+          ipRegion: args?.ipRegion,
+          ipCountry: args?.ipCountry,
+        };
+
+        await models.DB_People.updateOne(
+          { _id: matchedUser._id },
+          { $pull: { devices: deviceInfo } }
+        );
+
+        return "Device removed successfully!";
+      } catch (err) {
+        console.log("❌ Failed to login user: \n", err);
+        throw new Error(err.message);
+      }
+    },
   },
 };
 
