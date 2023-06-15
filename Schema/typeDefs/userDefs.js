@@ -91,6 +91,7 @@ const userType = gql`
       onMobile: Boolean
       userPlatform: String
       userAgent: String
+      userBrowser: String
       ipRegion: String
       ipCountry: String
     ): AuthPayload!

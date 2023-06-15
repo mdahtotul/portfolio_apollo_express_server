@@ -53,7 +53,6 @@ const userResolvers = {
     },
     loginUser: async (parent, args, { req, res }) => {
       try {
-        console.log(args);
         const { email, password } = args;
         if (!email || !password) {
           throw new UserInputError("❌ Email or Password is missing!");
@@ -73,6 +72,7 @@ const userResolvers = {
           onMobile: args?.onMobile,
           userPlatform: args?.userPlatform,
           userAgent: args?.userAgent,
+          userBrowser: args?.userBrowser,
           ipRegion: args?.ipRegion,
           ipCountry: args?.ipCountry,
         };
@@ -356,11 +356,8 @@ const userResolvers = {
         }
       );
     },
-    deleteUser: async (parent, args, context) => {
-      // console.log("is Auth", context.req.isAuth);
-      // console.log("userID", context.req.userId);
-      // console.log("userRole", context.req.userRole);
-      if (!context.req.isAuth) {
+    deleteUser: async (parent, args, { req, res }) => {
+      if (!req.isAuth || !req.userId || req.userRole !== "Admin") {
         throw new AuthenticationError("Unauthenticated!");
       }
 
