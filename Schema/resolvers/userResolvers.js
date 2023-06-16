@@ -8,7 +8,6 @@ const {
 const {
   validateEmail,
   otpGeneratorFunc,
-  getIPAddress,
   getLocationByIP,
 } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
