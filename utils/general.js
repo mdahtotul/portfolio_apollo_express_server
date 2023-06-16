@@ -1,4 +1,5 @@
 const otpGenerator = require("otp-generator");
+const geoip = require("geoip-lite");
 
 const otpGeneratorFunc = () => {
   const otp = otpGenerator.generate(6, {
@@ -23,6 +24,21 @@ const loginStrategies = {
   git: "GITHUB",
 };
 
+// const ipAddress = "103.127.3.43";
+
+const getLocationByIP = async (ipAddress, access_key) => {
+  const url = `http://api.ipapi.com/${ipAddress}?access_key=${access_key}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+};
+
+// getLocationUsingIP(ipAddress, "f0bfbc73db06de8d711185da05d9842d").then(
+//   (data) => {
+//     console.log("local data", data);
+//   }
+// );
+
 const getIPAddress = (req) => {
   return (ip =
     req.headers["cf-connecting-ip"] ||
@@ -37,4 +53,5 @@ module.exports = {
   validateEmail,
   loginStrategies,
   getIPAddress,
+  getLocationByIP,
 };

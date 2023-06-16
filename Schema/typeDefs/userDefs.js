@@ -92,8 +92,6 @@ const userType = gql`
       userPlatform: String
       userAgent: String
       userBrowser: String
-      ipRegion: String
-      ipCountry: String
     ): AuthPayload!
     currentUser: User
   }
@@ -109,13 +107,10 @@ const userType = gql`
     deleteUser(id: ID!): User
     removeDevice(
       userId: ID!
-      userIP: String
       onMobile: Boolean
       userPlatform: String
       userAgent: String
       userBrowser: String
-      ipRegion: String
-      ipCountry: String
     ): String
   }
 `;

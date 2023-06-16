@@ -9,6 +9,7 @@ const {
   validateEmail,
   otpGeneratorFunc,
   getIPAddress,
+  getLocationByIP,
 } = require("../../utils/general");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require("../../utils/nodemailer");
@@ -66,6 +67,10 @@ const userResolvers = {
         if (!isMatched) {
           throw new Error("❌ Password is incorrect!");
         }
+        const location = await getLocationByIP(
+          args?.userIP,
+          process.env.IPAPI_KEY
+        );
 
         const deviceInfo = {
           userIP: args?.userIP,
@@ -73,8 +78,8 @@ const userResolvers = {
           userPlatform: args?.userPlatform,
           userAgent: args?.userAgent,
           userBrowser: args?.userBrowser,
-          ipRegion: args?.ipRegion,
-          ipCountry: args?.ipCountry,
+          ipCity: location?.city,
+          ipCountry: location?.country_name,
         };
 
         await models.DB_People.updateOne(
@@ -88,6 +93,9 @@ const userResolvers = {
             userId: matchedUser._id,
             userEmail: matchedUser.email,
             userRole: matchedUser.role,
+            userIP: args?.userIP,
+            userCity: location?.city,
+            userCountry: location?.country_name,
           },
           process.env.JWT_SECRET,
           { expiresIn: process.env.JWT_EXPIRY }
@@ -374,13 +382,13 @@ const userResolvers = {
         }
 
         const deviceInfo = {
-          userIP: args?.userIP,
+          userIP: req.userIP,
           onMobile: args?.onMobile,
           userPlatform: args?.userPlatform,
           userAgent: args?.userAgent,
           userBrowser: args?.userBrowser,
-          ipRegion: args?.ipRegion,
-          ipCountry: args?.ipCountry,
+          ipCity: req.userCity,
+          ipCountry: req.userCounty,
         };
 
         await models.DB_People.updateOne(

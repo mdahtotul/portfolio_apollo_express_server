@@ -21,6 +21,9 @@ module.exports = (req, res, next) => {
     req.userId = decodedToken.userId;
     req.userEmail = decodedToken.userEmail;
     req.userRole = decodedToken.userRole;
+    req.userIP = decodedToken.userIP;
+    req.userCity = decodedToken.userCity;
+    req.userCountry = decodedToken.userCountry;
     next();
   } catch (err) {
     req.isAuth = false;
