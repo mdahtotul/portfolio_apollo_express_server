@@ -158,7 +158,7 @@ const userResolvers = {
           "Please use this following OTP to complete register!",
           genOtp
         );
-        return `OTP sent to ${email}`;
+        return `OTP sent to ${email} at ${new Date()}`;
       } catch (err) {
         console.log("Failed to send otp: \n", err);
         throw new GraphQLError(`${err.message}`);
@@ -384,7 +384,7 @@ const userResolvers = {
         };
 
         await models.DB_People.updateOne(
-          { _id: matchedUser._id },
+          { _id: matchedUser.id },
           { $pull: { devices: deviceInfo } }
         );
 
