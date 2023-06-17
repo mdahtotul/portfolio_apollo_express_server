@@ -70,8 +70,7 @@ const userResolvers = {
           args?.userIP,
           process.env.IPAPI_KEY
         );
-        console.log("location", location);
-        // TODO: check this later
+
         const deviceInfo = {
           userIP: args?.userIP,
           onMobile: args?.onMobile,
@@ -81,8 +80,6 @@ const userResolvers = {
           ipCity: location?.city,
           ipCountry: location?.country_name,
         };
-
-        console.log("deviceInfo", deviceInfo);
 
         await models.DB_People.updateOne(
           { _id: matchedUser._id },
