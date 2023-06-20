@@ -2,9 +2,13 @@ const { gql } = require("apollo-server-express");
 
 const userType = gql`
   type Device {
-    name: String!
-    OS: String!
-    IP: String
+    userIP: String
+    onMobile: Boolean
+    userPlatform: String
+    userAgent: String
+    userBrowser: String
+    ipCity: String
+    ipCountry: String
   }
 
   type User {
