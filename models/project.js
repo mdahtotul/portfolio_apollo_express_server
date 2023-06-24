@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
 const projectSchema = new Schema(
@@ -27,6 +27,10 @@ const projectSchema = new Schema(
     des: {
       type: String,
     },
+    isOfficeProject: {
+      type: Boolean,
+      default: false,
+    },
     tagsId: [
       {
         type: mongoose.Types.ObjectId,
@@ -34,12 +38,12 @@ const projectSchema = new Schema(
     ],
     status: {
       type: String,
-      enum: ['Not_Started', 'In_Progress', 'Completed'],
-      default: 'Not_Started',
+      enum: ["Not_Started", "In_Progress", "Completed"],
+      default: "Not_Started",
     },
     clientId: {
       type: mongoose.Types.ObjectId,
-      ref: 'People',
+      ref: "People",
     },
     live_site: {
       type: String,
@@ -60,6 +64,6 @@ const projectSchema = new Schema(
   }
 );
 
-const Project = model('Project', projectSchema);
+const Project = model("Project", projectSchema);
 
 module.exports = Project;

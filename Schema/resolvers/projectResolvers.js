@@ -59,6 +59,7 @@ const projectResolvers = {
           server_repo: args.input.server_repo || "",
           thumb_img: args.input.thumb_img || "",
           sub_images: args.input.sub_images || null,
+          isOfficeProject: args.input.isOfficeProject || false,
         });
         const project = await newProject.save();
 
@@ -107,6 +108,7 @@ const projectResolvers = {
         server_repo: args.input.server_repo,
         thumb_img: args.input.thumb_img,
         sub_images: args.input.sub_images,
+        isOfficeProject: args.input.isOfficeProject,
       });
       const updateProject = await models.DB_Project.findOneAndUpdate(
         { _id: args.id },

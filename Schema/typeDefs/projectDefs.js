@@ -16,6 +16,7 @@ const projectType = gql`
     clientId: ID
     client: User
     live_site: String
+    isOfficeProject: Boolean
     client_repo: String
     server_repo: String
     thumb_img: String
@@ -39,6 +40,7 @@ const projectType = gql`
     server_repo: String
     thumb_img: String
     sub_images: [String]
+    isOfficeProject: Boolean
   }
 
   input UpdateProjectInput {
@@ -56,6 +58,7 @@ const projectType = gql`
     server_repo: String
     thumb_img: String
     sub_images: [String]
+    isOfficeProject: Boolean
   }
 
   enum ProjectStatus {
