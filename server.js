@@ -76,7 +76,7 @@ const time =
 const server_string =
   process.env.NODE_ENV === "development"
     ? `http://localhost:${port}`
-    : process.env.prod_server;
+    : process.env.SERVER_URL;
 
 app.get("/", (req, res) =>
   res.status(200).send(
